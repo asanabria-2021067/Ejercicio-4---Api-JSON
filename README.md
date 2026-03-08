@@ -1,10 +1,11 @@
-# Balón de Oro API
+# 🏆 Balón de Oro API
 
-API REST pura en Go (stdlib únicamente) para gestionar el historial de ganadores del **Balón de Oro**.
+API REST construida en Go (únicamente librería estándar) para gestionar el historial de ganadores del **Balón de Oro** desde el año 2000.
 
-**Tema:** Ganadores del Balón de Oro (1956–presente)  
+**URL base:** `https://bombardeen-palencia.xyz/angel/ejercicio_4`  
 **Puerto:** `24725`  
-**Tecnología:** Go 1.22 — sin frameworks externos
+**Tecnología:** Go 1.22 — sin frameworks externos  
+**Autor:** Angel Gabriel Sanabria Morales — 24725
 
 ---
 
@@ -12,18 +13,19 @@ API REST pura en Go (stdlib únicamente) para gestionar el historial de ganadore
 
 ```
 .
-├── main.go              # Entry point y routing
+├── main.go                      # Entry point y routing
 ├── go.mod
 ├── Dockerfile
-├── docker-compose.yml
+├── docker-compose.yml.example
 ├── data/
-│   └── winners.json     # Persistencia en disco
+│   └── winners.json             # Persistencia en disco
 ├── handlers/
-│   └── winners.go       # Lógica de cada endpoint
+│   └── winners.go               # Lógica de cada endpoint
 ├── models/
-│   └── winner.go        # Struct Winner
-└── store/
-    └── store.go         # CRUD thread-safe con persistencia
+│   └── winner.go                # Struct Winner
+├── store/
+│   └── store.go                 # CRUD thread-safe con persistencia
+└── docs/                        # Capturas de evidencia
 ```
 
 ---
@@ -33,13 +35,13 @@ API REST pura en Go (stdlib únicamente) para gestionar el historial de ganadore
 ```json
 {
   "id":                1,
-  "player":            "Lionel Messi",
-  "nationality":       "Argentina",
-  "club":              "FC Barcelona",
-  "year":              2009,
-  "votes":             473,
+  "player":            "Luis Figo",
+  "nationality":       "Portugal",
+  "club":              "Real Madrid",
+  "year":              2000,
+  "votes":             561,
   "position":          "Forward",
-  "goals_that_season": 38
+  "goals_that_season": 11
 }
 ```
 
@@ -81,33 +83,32 @@ Todos los filtros son combinables entre sí.
 
 ### Health check
 ```bash
-curl http://localhost:24725/api/ping
+curl https://bombardeen-palencia.xyz/angel/ejercicio_4/api/ping
 ```
 
 ### GET — Todos los ganadores
 ```bash
-curl http://localhost:24725/api/winners
+curl https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners
 ```
 
 ### GET — Por query parameter
 ```bash
-curl "http://localhost:24725/api/winners?id=5"
+curl "https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners?id=6"
 ```
 
 ### GET — Por path parameter
 ```bash
-curl http://localhost:24725/api/winners/5
+curl https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/6
 ```
 
 ### GET — Filtros combinados
 ```bash
-curl "http://localhost:24725/api/winners?nationality=Argentina&position=Forward&min_goals=50"
-curl "http://localhost:24725/api/winners?club=Real+Madrid"
+curl "https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners?nationality=Argentina&position=Forward&min_goals=50"
 ```
 
 ### POST — Registrar nuevo ganador
 ```bash
-curl -X POST http://localhost:24725/api/winners \
+curl -X POST https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners \
   -H "Content-Type: application/json" \
   -d '{
     "player": "Vinicius Jr.",
@@ -122,29 +123,29 @@ curl -X POST http://localhost:24725/api/winners \
 
 ### PUT — Reemplazar registro completo
 ```bash
-curl -X PUT http://localhost:24725/api/winners/1 \
+curl -X PUT https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/1 \
   -H "Content-Type: application/json" \
   -d '{
-    "player": "Lionel Messi",
-    "nationality": "Argentina",
-    "club": "FC Barcelona",
-    "year": 2009,
-    "votes": 500,
+    "player": "Luis Figo",
+    "nationality": "Portugal",
+    "club": "Real Madrid",
+    "year": 2000,
+    "votes": 600,
     "position": "Forward",
-    "goals_that_season": 38
+    "goals_that_season": 11
   }'
 ```
 
 ### PATCH — Actualizar campo parcial
 ```bash
-curl -X PATCH http://localhost:24725/api/winners/1 \
+curl -X PATCH https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/1 \
   -H "Content-Type: application/json" \
-  -d '{"votes": 500}'
+  -d '{"votes": 999}'
 ```
 
 ### DELETE — Eliminar registro
 ```bash
-curl -X DELETE http://localhost:24725/api/winners/15
+curl -X DELETE https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/26
 ```
 
 ---
@@ -153,48 +154,45 @@ curl -X DELETE http://localhost:24725/api/winners/15
 
 ### 404 — No encontrado
 ```bash
-curl http://localhost:24725/api/winners/999
-# {"error":"Not Found","code":404,"message":"winner not found"}
+curl https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/999
+```
+```json
+{"error":"Not Found","code":404,"message":"winner not found"}
 ```
 
 ### 422 — Validación fallida
 ```bash
-curl -X POST http://localhost:24725/api/winners \
+curl -X POST https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners \
   -H "Content-Type: application/json" \
-  -d '{"player":"","nationality":"Argentina","club":"Barcelona","year":2009,"votes":400,"position":"Forward","goals_that_season":38}'
-# {"error":"Unprocessable Entity","code":422,"message":"player is required"}
+  -d '{"player":"","nationality":"Brazil","club":"PSG","year":2025,"votes":500,"position":"Forward","goals_that_season":20}'
+```
+```json
+{"error":"Unprocessable Entity","code":422,"message":"player is required"}
 ```
 
 ### 400 — Campo desconocido en PATCH
 ```bash
-curl -X PATCH http://localhost:24725/api/winners/1 \
+curl -X PATCH https://bombardeen-palencia.xyz/angel/ejercicio_4/api/winners/1 \
   -H "Content-Type: application/json" \
   -d '{"unknown_field": "value"}'
-# {"error":"Bad Request","code":400,"message":"unknown field: unknown_field"}
 ```
-
----
-
-## Ejecución
-
-### Con Docker Compose
-```bash
-docker-compose up --build
+```json
+{"error":"Bad Request","code":400,"message":"unknown field: unknown_field"}
 ```
-
-### Sin Docker
-```bash
-go run .
-```
-
-Servidor en `http://localhost:24725`.
 
 ---
 
 ## Formato de respuesta
 
-**Éxito:** `{ "data": { ... } }`  
-**Error:** `{ "error": "Not Found", "code": 404, "message": "winner not found" }`
+**Éxito:**
+```json
+{ "data": { ... } }
+```
+
+**Error:**
+```json
+{ "error": "Not Found", "code": 404, "message": "winner not found" }
+```
 
 ---
 
@@ -214,4 +212,58 @@ Servidor en `http://localhost:24725`.
 
 ## Persistencia
 
-Cada escritura (POST, PUT, PATCH, DELETE) guarda cambios en `data/winners.json` inmediatamente, con mutex para thread-safety.
+Cada escritura (POST, PUT, PATCH, DELETE) guarda los cambios en `data/winners.json` inmediatamente, con mutex para garantizar thread-safety.
+
+---
+
+## Ejecución
+
+### Con Docker
+```bash
+cp docker-compose.yml.example docker-compose.yml
+docker compose up --build
+```
+
+### Sin Docker
+```bash
+go run .
+```
+
+Servidor disponible en el puerto `24725`.
+
+---
+
+## Evidencia
+
+### Servidor corriendo
+![Servidor corriendo en puerto 24725](docs/docker-build.png)
+
+### GET — Todos los ganadores
+![GET all winners](docs/get-all.png)
+
+### GET — Query parameter
+![GET by query param](docs/get-query-param.png)
+
+### GET — Path parameter
+![GET by path param](docs/get-path-param.png)
+
+### GET — Filtros combinados
+![GET combined filters](docs/get-filters.png)
+
+### POST — Nuevo ganador
+![POST new winner](docs/post.png)
+
+### PUT — Reemplazar registro
+![PUT replace](docs/put.png)
+
+### PATCH — Actualización parcial
+![PATCH partial update](docs/patch.png)
+
+### DELETE — Eliminar registro
+![DELETE](docs/delete.png)
+
+### Error 404
+![404 not found](docs/error-404.png)
+
+### Error 422
+![422 validation error](docs/error-422.png)
