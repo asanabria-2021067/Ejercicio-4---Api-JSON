@@ -1,8 +1,0 @@
-services:
-  go-server:
-    build: .
-    container_name: go-bdo-api
-    ports:
-      - "24725:24725"
-    volumes:
-      - .:/app
