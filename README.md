@@ -1,4 +1,4 @@
-# 🏆 Balón de Oro API
+# Balón de Oro API
 
 API REST construida en Go (únicamente librería estándar) para gestionar el historial de ganadores del **Balón de Oro** desde el año 2000.
 
@@ -6,6 +6,16 @@ API REST construida en Go (únicamente librería estándar) para gestionar el hi
 **Puerto:** `24725`  
 **Tecnología:** Go 1.22 — sin frameworks externos  
 **Autor:** Angel Gabriel Sanabria Morales — 24725
+
+---
+
+## Acceso público y configuración de nginx
+
+El servidor Go corre localmente en el puerto `24725`. El acceso externo es posible gracias a un **reverse proxy en nginx** que redirige las peticiones desde la URL pública hacia ese puerto interno.
+
+![Configuración nginx reverse proxy](docs/nginx-proxy.png)
+
+De este modo, cualquier petición a `https://bombardeen-palencia.xyz/angel/ejercicio_4/...` es transparentemente redirigida por nginx al servidor Go corriendo en `localhost:24725`.
 
 ---
 
